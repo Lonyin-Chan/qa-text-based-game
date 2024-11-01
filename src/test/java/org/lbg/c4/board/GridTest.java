@@ -18,4 +18,14 @@ public class GridTest {
         assertEquals(expectedResult, actualResult.size());
         assertEquals(expectedResult, actualResult.get(0).size());
     }
+
+    @Test
+    public void getGrid_size() {
+        Grid cut = new Grid(4);
+        int expectedResult = 4;
+
+        int actualResult = cut.getSize();
+
+        assertEquals(expectedResult, actualResult);
+    }
 }

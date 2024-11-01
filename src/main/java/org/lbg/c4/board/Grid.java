@@ -1,16 +1,19 @@
 package org.lbg.c4.board;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Grid {
     private final ArrayList<ArrayList<Tile>> grid;
+    private final int size;
 
     public Grid(int size) {
         this.grid = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
+        this.size = size;
+        for (int x = 0; x < size; x++) {
             ArrayList<Tile> row = new ArrayList<>();
-            for (int j = 0; j < size; j++) {
-                Tile tile = new Tile();
+            for (int y = 0; y < size; y++) {
+                Tile tile = new Tile(new Point(x, y), null);
                 row.add(tile);
             }
             this.grid.add(row);
@@ -19,6 +22,10 @@ public class Grid {
 
     public ArrayList<ArrayList<Tile>> getGrid() {
         return grid;
+    }
+
+    public int getSize() {
+        return size;
     }
 
 }
