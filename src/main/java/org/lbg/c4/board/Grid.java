@@ -22,9 +22,9 @@ public class Grid {
 
     public void printGrid() {
         // Print column indices
-        System.out.print("   ");
+        System.out.print("    ");
         for (int y = 0; y < size; y++) {
-            System.out.print(y + " ");
+            System.out.print(y + "  ");
         }
         System.out.println();
 

@@ -30,7 +30,7 @@ public class Tile {
 
     @Override
     public String toString() {
-        return entity == null ? " " : entity.toString();
+        return entity == null ? "  " : entity.toString();
     }
 
 }
