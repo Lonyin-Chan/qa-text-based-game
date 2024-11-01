@@ -2,10 +2,7 @@ package org.lbg.c4;
 
 import org.lbg.c4.board.Grid;
 import org.lbg.c4.board.Tile;
-import org.lbg.c4.entities.IEntity;
-import org.lbg.c4.entities.Monster;
-import org.lbg.c4.entities.Player;
-import org.lbg.c4.entities.Treasure;
+import org.lbg.c4.entities.*;
 import org.lbg.c4.inputs.*;
 
 import java.awt.*;
@@ -65,18 +62,20 @@ public class GameManager {
         placeSingleEntity(grid, new Player(), random, totalTiles);
         placeSingleEntity(grid, new Treasure(), random, totalTiles);
 
-        int numMonsters = totalTiles / 4;
+        int numMonsters = totalTiles / 10;
         for (int i = 0; i < numMonsters; i++) {
-//            placeSingleEntity(grid, new Monster(), random, totalTiles);
+
+            Monster randomMonster = MonsterSelector.getRandomMonster();
+            placeSingleEntity(grid, randomMonster, random, totalTiles);
         }
+        System.out.println("Placing Monster");
     }
 
     private void placeSingleEntity(ArrayList<ArrayList<Tile>> grid, IEntity entity, Random random, int totalTiles) {
         int x, y;
         do {
-            int position = random.nextInt(totalTiles);
-            x = position / grid.size();
-            y = position / grid.size();
+            x = random.nextInt(grid.size() - 1);
+            y = random.nextInt(grid.size() - 1);
         } while (grid.get(x).get(y).getEntity() != null);
 
         grid.get(x).get(y).setEntity(entity);
