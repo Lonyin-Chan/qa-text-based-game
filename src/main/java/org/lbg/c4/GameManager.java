@@ -12,6 +12,7 @@ import java.util.Random;
 public class GameManager {
     boolean gameFinished = false;
     boolean gameStarted = false;
+    boolean gameLost = false;
     Grid grid = null;
     Point playerLocation;
     Point treasureLocation;
@@ -19,11 +20,13 @@ public class GameManager {
     ICustomPrompt titlePrompt;
     ICustomPrompt gamePrompt;
     ICustomPrompt monsterPrompt;
+    ICustomPrompt errorPrompt;
 
     public GameManager() {
         titlePrompt = new TitlePrompt();
         gamePrompt = new GamePrompt();
         monsterPrompt = new MonsterPrompt();
+        errorPrompt = new ErrorPrompt();
     }
 
     public void startGame() {
@@ -35,7 +38,16 @@ public class GameManager {
         while(!gameFinished) {
             gameLogic();
         }
-        titlePrompt.prompt("\uD83C\uDF89 \uD83C\uDF89 End of game \uD83C\uDF89 \uD83C\uDF89");
+        processResult();
+        titlePrompt.prompt("\uD83D\uDE31 \uD83D\uDE31 End of game \uD83D\uDE31 \uD83D\uDE31");
+    }
+
+    public void processResult() {
+        if (gameLost) {
+            gamePrompt.prompt("Game Lost! Better Luck Next Time!");
+        } else {
+            gamePrompt.prompt("\uD83C\uDF89 \uD83C\uDF89 Treasure Found!!!! Well Done! \uD83C\uDF89 \uD83C\uDF89");
+        }
     }
 
     private void setUpGame(IntReader ir) {
@@ -97,14 +109,15 @@ public class GameManager {
        IEntity result = processInput();
        grid.printGrid();
        if (result instanceof Treasure) {
-           gamePrompt.prompt("Treasure Found!!!! Well Done!");
            gameFinished = true;
            return;
        }
        if (result instanceof Monster) {
-           gamePrompt.prompt("Monster Encountered!");
            Monster monster = (Monster) result;
            monsterPrompt.prompt(monster.greeting());
+           gameFinished = true;
+           gameLost = true;
+           return;
        }
        treasureHint();
     }
@@ -145,8 +158,7 @@ public class GameManager {
                 isValidMove = true;
                 newPlayerLocation = new Point(newX, newY);
             } else {
-                gamePrompt.prompt("Move out of bounds. Please try again.");
-
+                errorPrompt.prompt("Move out of bounds. Please try again.");
             }
         }
         IEntity result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);

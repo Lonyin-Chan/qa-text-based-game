@@ -6,6 +6,6 @@ public class GamePrompt implements ICustomPrompt{
     {
         if (msg == null)
             throw new IllegalArgumentException("Null value is not valid!!!");
-        System.out.println("<<<<>>>> " + msg + " <<<<>>>>");
+        System.out.println("\uD83C\uDFAE \uD83C\uDFAE \uD83C\uDFAE \uD83C\uDFAE " + msg + " \uD83C\uDFAE \uD83C\uDFAE \uD83C\uDFAE \uD83C\uDFAE");
     }
 }

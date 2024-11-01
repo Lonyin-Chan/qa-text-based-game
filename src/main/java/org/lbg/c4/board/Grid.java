@@ -42,14 +42,21 @@ public class Grid {
 
 
     public void printGrid() {
-        // Print column indices
+        // print indices
         System.out.print("    ");
         for (int y = 0; y < size; y++) {
             System.out.print(y + "  ");
         }
         System.out.println();
 
-        // Print rows with x-coordinates
+        // print horizontal line at the top
+        System.out.print("   ");
+        for (int y = 0; y < size; y++) {
+            System.out.print("---");
+        }
+        System.out.println();
+
+        // print rows and horizontal lines
         for (int x = 0; x < size; x++) {
             System.out.print(x + " |"); // Print row index
             for (Tile tile : grid.get(x)) {
@@ -57,8 +64,14 @@ public class Grid {
             }
             System.out.println();
 
+            // print horizontal line after each row
+            System.out.print("   ");
+            for (int y = 0; y < size; y++) {
+                System.out.print("---");
+            }
+            System.out.println();
+
         }
+
     }
-
-
 }

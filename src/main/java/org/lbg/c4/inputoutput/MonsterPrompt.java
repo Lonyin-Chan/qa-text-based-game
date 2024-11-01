@@ -6,6 +6,6 @@ public class MonsterPrompt implements ICustomPrompt{
     {
         if (msg == null)
             throw new IllegalArgumentException("Null value is not valid!!!");
-        System.out.println("➡ ➡ ➡" + msg + "⬅ ⬅ ⬅");
+        System.out.println("\uD83D\uDD25 \uD83D\uDD25 \uD83D\uDD25 \uD83D\uDD25 " + msg + " \uD83D\uDD25 \uD83D\uDD25 \uD83D\uDD25 \uD83D\uDD25");
     }
 }
