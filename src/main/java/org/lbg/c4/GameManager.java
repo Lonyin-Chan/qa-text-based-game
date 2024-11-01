@@ -3,12 +3,10 @@ package org.lbg.c4;
 import org.lbg.c4.board.Grid;
 import org.lbg.c4.board.Tile;
 import org.lbg.c4.entities.*;
-import org.lbg.c4.inputs.*;
+import org.lbg.c4.inputoutput.*;
 
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Random;
 
 public class GameManager {
@@ -20,10 +18,12 @@ public class GameManager {
 
     ICustomPrompt titlePrompt;
     ICustomPrompt gamePrompt;
+    ICustomPrompt monsterPrompt;
 
     public GameManager() {
         titlePrompt = new TitlePrompt();
         gamePrompt = new GamePrompt();
+        monsterPrompt = new MonsterPrompt();
     }
 
     public void startGame() {
@@ -94,16 +94,18 @@ public class GameManager {
     }
 
     private void gameLogic() {
-
-       String result = processInput();
-       if (result.equals( "Treasure")) {
+       IEntity result = processInput();
+       grid.printGrid();
+       if (result instanceof Treasure) {
            gamePrompt.prompt("Treasure Found!!!! Well Done!");
            gameFinished = true;
+           return;
        }
-       if (result.equals("Monster")) {
+       if (result instanceof Monster) {
            gamePrompt.prompt("Monster Encountered!");
+           Monster monster = (Monster) result;
+           monsterPrompt.prompt(monster.greeting());
        }
-       grid.printGrid();
        treasureHint();
     }
 
@@ -113,32 +115,26 @@ public class GameManager {
         gamePrompt.prompt("Treasure is " + xDiff + " rows away and " + yDiff + " columns away...");
     }
 
-    private String processInput() {
+    private IEntity processInput() {
         ICustomPrompt customPrompt = new CustomPrompt();
         ArrowReader ar = new ArrowReader(customPrompt);
         String lineread = "";
-        String result = "";
         lineread = ar.readFromKeyboard(System.in);
+        Point newPlayerLocation = null;
         if (lineread.equalsIgnoreCase("W")) {
-            Point newPlayerLocation = new Point(playerLocation.x - 1, playerLocation.y);
-            result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);
-            playerLocation = newPlayerLocation;
+            newPlayerLocation = new Point(playerLocation.x - 1, playerLocation.y);
         }
         if (lineread.equalsIgnoreCase("S")) {
-            Point newPlayerLocation = new Point(playerLocation.x + 1, playerLocation.y);
-            result =  grid.setNewPlayerTile(playerLocation, newPlayerLocation);
-            playerLocation = newPlayerLocation;
+            newPlayerLocation = new Point(playerLocation.x + 1, playerLocation.y);
         }
         if (lineread.equalsIgnoreCase("A")) {
-            Point newPlayerLocation = new Point(playerLocation.x, playerLocation.y - 1);
-            result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);
-            playerLocation = newPlayerLocation;
+            newPlayerLocation = new Point(playerLocation.x, playerLocation.y - 1);
         }
         if (lineread.equalsIgnoreCase("D")) {
-            Point newPlayerLocation = new Point(playerLocation.x, playerLocation.y + 1);
-            result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);
-            playerLocation = newPlayerLocation;
+            newPlayerLocation = new Point(playerLocation.x, playerLocation.y + 1);
         }
+        IEntity result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);
+        playerLocation = newPlayerLocation;
         return result;
     }
 

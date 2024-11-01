@@ -5,4 +5,9 @@ public class MonsterA extends Monster{
     public String toString() {
         return "\uD83D\uDC7E";
     }
+
+    @Override
+    public String greeting() {
+        return "BOO";
+    }
 }

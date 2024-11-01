@@ -32,19 +32,12 @@ public class Grid {
         return size;
     }
 
-    public String setNewPlayerTile(Point oldLocation, Point newLocation) {
+    public IEntity setNewPlayerTile(Point oldLocation, Point newLocation) {
         IEntity player = grid.get(oldLocation.x).get(oldLocation.y).getEntity();
-        IEntity newTile = grid.get(newLocation.x).get(newLocation.y).getEntity();
+        IEntity newTileEntity = grid.get(newLocation.x).get(newLocation.y).getEntity();
         grid.get(newLocation.x).get(newLocation.y).setEntity(player);
         grid.get(oldLocation.x).get(oldLocation.y).setEntity(null);
-        if(newTile instanceof Treasure) {
-            return "Treasure";
-        }
-        if(newTile instanceof Monster) {
-            return "Monster";
-        }
-
-        return "nothing";
+        return newTileEntity;
     }
 
 

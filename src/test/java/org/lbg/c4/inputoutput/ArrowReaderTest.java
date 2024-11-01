@@ -1,4 +1,4 @@
-package org.lbg.c4.inputs;
+package org.lbg.c4.inputoutput;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
