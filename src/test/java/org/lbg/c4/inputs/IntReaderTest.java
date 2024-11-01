@@ -13,7 +13,8 @@ public class IntReaderTest {
 
     @BeforeEach
     public void setUp() {
-        cut = new IntReader();
+        ICustomPrompt customPrompt = new CustomPrompt();
+        cut = new IntReader(customPrompt);
     }
 
     @Test
