@@ -19,9 +19,11 @@ public class GameManager {
     Point treasureLocation;
 
     ICustomPrompt titlePrompt;
+    ICustomPrompt gamePrompt;
 
     public GameManager() {
         titlePrompt = new TitlePrompt();
+        gamePrompt = new GamePrompt();
     }
 
     public void startGame() {
@@ -47,6 +49,7 @@ public class GameManager {
         gameStarted = true;
         titlePrompt.prompt("Game has started!");
         grid.printGrid();
+        treasureHint();
     }
 
     private ArrayList<ArrayList<Tile>> createGrid(int size) {
@@ -75,7 +78,6 @@ public class GameManager {
             Monster randomMonster = MonsterSelector.getRandomMonster();
             placeSingleEntity(randomMonster, random, totalTiles);
         }
-        System.out.println("Placing Monster");
     }
 
     private Point placeSingleEntity( IEntity entity, Random random, int totalTiles) {
@@ -95,13 +97,20 @@ public class GameManager {
 
        String result = processInput();
        if (result.equals( "Treasure")) {
-           titlePrompt.prompt("Treasure Found!!!! Well Done!");
+           gamePrompt.prompt("Treasure Found!!!! Well Done!");
            gameFinished = true;
        }
        if (result.equals("Monster")) {
-           titlePrompt.prompt("Monster Encountered!");
+           gamePrompt.prompt("Monster Encountered!");
        }
        grid.printGrid();
+       treasureHint();
+    }
+
+    private void treasureHint() {
+        int xDiff = Math.abs(playerLocation.x - treasureLocation.x);
+        int yDiff = Math.abs(playerLocation.y - treasureLocation.y);
+        gamePrompt.prompt("Treasure is " + xDiff + " rows away and " + yDiff + " columns away...");
     }
 
     private String processInput() {
