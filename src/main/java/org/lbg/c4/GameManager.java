@@ -119,19 +119,35 @@ public class GameManager {
         ICustomPrompt customPrompt = new CustomPrompt();
         ArrowReader ar = new ArrowReader(customPrompt);
         String lineread = "";
-        lineread = ar.readFromKeyboard(System.in);
         Point newPlayerLocation = null;
-        if (lineread.equalsIgnoreCase("W")) {
-            newPlayerLocation = new Point(playerLocation.x - 1, playerLocation.y);
-        }
-        if (lineread.equalsIgnoreCase("S")) {
-            newPlayerLocation = new Point(playerLocation.x + 1, playerLocation.y);
-        }
-        if (lineread.equalsIgnoreCase("A")) {
-            newPlayerLocation = new Point(playerLocation.x, playerLocation.y - 1);
-        }
-        if (lineread.equalsIgnoreCase("D")) {
-            newPlayerLocation = new Point(playerLocation.x, playerLocation.y + 1);
+        int newX = 0, newY = 0;
+
+        boolean isValidMove = false;
+
+        while (!isValidMove) {
+            lineread = ar.readFromKeyboard(System.in);
+
+            if (lineread.equalsIgnoreCase("W")) {
+                newX = playerLocation.x - 1;
+                newY = playerLocation.y;
+            } else if (lineread.equalsIgnoreCase("S")) {
+                newX = playerLocation.x + 1;
+                newY = playerLocation.y;
+            } else if (lineread.equalsIgnoreCase("A")) {
+                newX = playerLocation.x;
+                newY = playerLocation.y - 1;
+            } else if (lineread.equalsIgnoreCase("D")) {
+                newX = playerLocation.x;
+                newY = playerLocation.y + 1;
+            }
+
+            if (newX >= 0 && newX < grid.getSize() && newY >= 0 && newY < grid.getSize()) {
+                isValidMove = true;
+                newPlayerLocation = new Point(newX, newY);
+            } else {
+                gamePrompt.prompt("Move out of bounds. Please try again.");
+
+            }
         }
         IEntity result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);
         playerLocation = newPlayerLocation;
