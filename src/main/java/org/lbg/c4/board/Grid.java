@@ -7,17 +7,9 @@ public class Grid {
     private final ArrayList<ArrayList<Tile>> grid;
     private final int size;
 
-    public Grid(int size) {
-        this.grid = new ArrayList<>();
+    public Grid(ArrayList<ArrayList<Tile>> grid, int size) {
+        this.grid = grid;
         this.size = size;
-        for (int x = 0; x < size; x++) {
-            ArrayList<Tile> row = new ArrayList<>();
-            for (int y = 0; y < size; y++) {
-                Tile tile = new Tile(new Point(x, y), null);
-                row.add(tile);
-            }
-            this.grid.add(row);
-        }
     }
 
     public ArrayList<ArrayList<Tile>> getGrid() {
