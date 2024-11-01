@@ -28,4 +28,9 @@ public class Tile {
         this.entity = entity;
     }
 
+    @Override
+    public String toString() {
+        return "E";
+    }
+
 }
