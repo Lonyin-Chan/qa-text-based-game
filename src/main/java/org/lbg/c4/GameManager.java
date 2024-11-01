@@ -8,12 +8,15 @@ import org.lbg.c4.inputs.*;
 import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 public class GameManager {
     boolean gameFinished = false;
     boolean gameStarted = false;
     Grid grid = null;
+    Point playerLocation;
+    Point treasureLocation;
 
     ICustomPrompt titlePrompt;
 
@@ -21,12 +24,16 @@ public class GameManager {
         titlePrompt = new TitlePrompt();
     }
 
-    public void processInputs() {
+    public void startGame() {
         ICustomPrompt customPrompt = new CustomPrompt();
         IntReader ir = new IntReader(customPrompt);
         while(!gameStarted) {
             setUpGame(ir);
         }
+        while(!gameFinished) {
+            gameLogic();
+        }
+        titlePrompt.prompt("\uD83C\uDF89 \uD83C\uDF89 End of game \uD83C\uDF89 \uD83C\uDF89");
     }
 
     private void setUpGame(IntReader ir) {
@@ -34,8 +41,8 @@ public class GameManager {
         String lineRead = ir.readFromKeyboard(System.in);
         int size = Integer.parseInt(lineRead);
         ArrayList<ArrayList<Tile>> newGrid = createGrid(size);
-        placeEntities(newGrid, size);
         grid = new Grid(newGrid, size);
+        placeEntities(newGrid, size);
 
         gameStarted = true;
         titlePrompt.prompt("Game has started!");
@@ -59,35 +66,72 @@ public class GameManager {
         Random random = new Random();
         int totalTiles = size * size;
 
-        placeSingleEntity(grid, new Player(), random, totalTiles);
-        placeSingleEntity(grid, new Treasure(), random, totalTiles);
+        playerLocation = placeSingleEntity(new Player(), random, totalTiles);
+        treasureLocation = placeSingleEntity(new Treasure(), random, totalTiles);
 
         int numMonsters = totalTiles / 10;
         for (int i = 0; i < numMonsters; i++) {
 
             Monster randomMonster = MonsterSelector.getRandomMonster();
-            placeSingleEntity(grid, randomMonster, random, totalTiles);
+            placeSingleEntity(randomMonster, random, totalTiles);
         }
         System.out.println("Placing Monster");
     }
 
-    private void placeSingleEntity(ArrayList<ArrayList<Tile>> grid, IEntity entity, Random random, int totalTiles) {
+    private Point placeSingleEntity( IEntity entity, Random random, int totalTiles) {
         int x, y;
+        Point location;
         do {
-            x = random.nextInt(grid.size() - 1);
-            y = random.nextInt(grid.size() - 1);
-        } while (grid.get(x).get(y).getEntity() != null);
+            x = random.nextInt(grid.getSize() - 1);
+            y = random.nextInt(grid.getSize() - 1);
+            location = new Point(x, y);
+        } while (grid.getTile(location).getEntity() != null);
 
-        grid.get(x).get(y).setEntity(entity);
+        grid.getTile(location).setEntity(entity);
+        return location;
     }
 
     private void gameLogic() {
+
+       String result = processInput();
+       if (result.equals( "Treasure")) {
+           titlePrompt.prompt("Treasure Found!!!! Well Done!");
+           gameFinished = true;
+       }
+       if (result.equals("Monster")) {
+           titlePrompt.prompt("Monster Encountered!");
+       }
+       grid.printGrid();
+    }
+
+    private String processInput() {
         ICustomPrompt customPrompt = new CustomPrompt();
         ArrowReader ar = new ArrowReader(customPrompt);
         String lineread = "";
-        while (!gameFinished) {
-            lineread = ar.readFromKeyboard(System.in);
+        String result = "";
+        lineread = ar.readFromKeyboard(System.in);
+        if (lineread.equalsIgnoreCase("W")) {
+            Point newPlayerLocation = new Point(playerLocation.x - 1, playerLocation.y);
+            result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);
+            playerLocation = newPlayerLocation;
         }
+        if (lineread.equalsIgnoreCase("S")) {
+            Point newPlayerLocation = new Point(playerLocation.x + 1, playerLocation.y);
+            result =  grid.setNewPlayerTile(playerLocation, newPlayerLocation);
+            playerLocation = newPlayerLocation;
+        }
+        if (lineread.equalsIgnoreCase("A")) {
+            Point newPlayerLocation = new Point(playerLocation.x, playerLocation.y - 1);
+            result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);
+            playerLocation = newPlayerLocation;
+        }
+        if (lineread.equalsIgnoreCase("D")) {
+            Point newPlayerLocation = new Point(playerLocation.x, playerLocation.y + 1);
+            result = grid.setNewPlayerTile(playerLocation, newPlayerLocation);
+            playerLocation = newPlayerLocation;
+        }
+        return result;
     }
+
 
 }
