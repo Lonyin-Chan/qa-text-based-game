@@ -1,92 +1,73 @@
 pipeline {
     agent any
     tools {
-        maven 'M3'
+        maven 'M3' 
     }
     environment {
         VM_HOST = "35.210.121.134" 
-        PROJECT_DIR = "/qa-item-task-build" 
+        GIT_REPO = "https://github.com/Lonyin-Chan/qa-text-based-game.git" 
+        PROJECT_DIR = "qa-item-task-build" 
         JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar" 
+        TARGET_DIR = "/home/jenkins" 
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm 
-                echo "Project directory: ${PROJECT_DIR}"  
+                checkout scm
+                echo "Checked out code from: ${env.GIT_REPO}"
             }
         }
-        stage('SSH into Target VM') {
+
+        stage('Build JAR on Jenkins') {
             steps {
-                sh """
-                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} 'echo SSH successful'
-                """
+                script {
+                    sh 'mvn clean package -DskipTests'
+                    echo "JAR build successful"
+                }
             }
         }
-        stage('Prepare Target Directory on VM') {
+
+        stage('Copy JAR to Target VM') {
             steps {
-                sh """
-                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                    sudo mkdir -p /qa-item-task-build &&  # Create the directory if it doesn't exist
-                    sudo chown jenkins:jenkins /qa-item-task-build  # Grant write permissions to the jenkins user
-                '
-                """
+                script {
+                    sh """
+                    scp target/${JAR_NAME} jenkins@${VM_HOST}:${TARGET_DIR}
+                    """
+                }
             }
         }
-        stage('Copy Project to Root Directory on Target VM') {
-            steps {
-                sh """
-                tar czf project.tar.gz -C ${env.WORKSPACE} . &&
-                scp project.tar.gz jenkins@${VM_HOST}:${PROJECT_DIR}
-                """
-            }
-        }
-        stage('Build JAR on Target VM') {
-            steps {
-                sh """
-                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                cd / &&
-                tar xzf project.tar.gz &&
-                cd qa-item-task-build &&
-                mvn clean package
-                '
-                """
-            }
-        }
-        stage('Build Docker Image on Target VM') {
-            steps {
-                sh """
-                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                cd /qa-item-task-build &&
-                docker build -t my-java-app .
-                '
-                """
-            }
-        }
+
         stage('Run Docker Container on Target VM') {
             steps {
-                sh """
-                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                docker run -d -p 8081:8080 my-java-app
-                '
-                """
+                script {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
+                    docker run -d -p 8081:8080 -v ${TARGET_DIR}/${JAR_NAME}:/app/${JAR_NAME} my-java-app
+                    '
+                    """
+                }
             }
         }
-        stage('Clean Up Project Files on Target VM') {
+
+        stage('Clean Up') {
             steps {
-                sh """
-                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                rm -rf /qa-item-task-build/project.tar.gz
-                '
-                """
+                script {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
+                    rm -f ${TARGET_DIR}/${JAR_NAME}
+                    '
+                    """
+                }
             }
         }
     }
+
     post {
         success {
-            echo 'Build and run successful on target VM!'
+            echo 'Build, copy, and containerization successful!'
         }
         failure {
-            echo 'Build or run failed on target VM.'
+            echo 'There was an error during the process.'
         }
     }
 }
