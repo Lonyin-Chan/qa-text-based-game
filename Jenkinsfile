@@ -37,6 +37,16 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image on Target VM') {
+            steps {
+                sh """
+                    ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
+                    cd ${PROJECT_DIR} && 
+                    sudo docker build -t my-java-app .'
+                """
+            }
+        }
+
         stage('Run Docker Container on Target VM') {
             steps {
                 script {
