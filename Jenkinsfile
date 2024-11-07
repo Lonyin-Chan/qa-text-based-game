@@ -11,14 +11,24 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm  
-                echo "Project directory: ${PROJECT_DIR}" 
+                checkout scm 
+                echo "Project directory: ${PROJECT_DIR}"  
             }
         }
         stage('SSH into Target VM') {
             steps {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} 'echo SSH successful'
+                """
+            }
+        }
+        stage('Prepare Target Directory on VM') {
+            steps {
+                sh """
+                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
+                    sudo mkdir -p /qa-item-task-build &&  # Create the directory if it doesn't exist
+                    sudo chown jenkins:jenkins /qa-item-task-build  # Grant write permissions to the jenkins user
+                '
                 """
             }
         }
