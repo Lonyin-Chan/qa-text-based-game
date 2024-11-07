@@ -4,15 +4,15 @@ pipeline {
         maven 'M3'
     }
     environment {
-        VM_HOST = "35.210.121.134"  
-        PROJECT_DIR = "${env.WORKSPACE}"  
-        JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar"  
+        VM_HOST = "35.210.121.134" 
+        PROJECT_DIR = "/qa-item-task-build" 
+        JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar" 
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm 
-                echo "Project directory: ${PROJECT_DIR}"  
+                checkout scm  
+                echo "Project directory: ${PROJECT_DIR}" 
             }
         }
         stage('SSH into Target VM') {
@@ -22,10 +22,10 @@ pipeline {
                 """
             }
         }
-        stage('Copy Project to Target VM') {
+        stage('Copy Project to Root Directory on Target VM') {
             steps {
                 sh """
-                tar czf project.tar.gz -C ${env.WORKSPACE} . && 
+                tar czf project.tar.gz -C ${env.WORKSPACE} . &&
                 scp project.tar.gz jenkins@${VM_HOST}:${PROJECT_DIR}
                 """
             }
@@ -34,8 +34,9 @@ pipeline {
             steps {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                cd ${PROJECT_DIR} &&
+                cd / &&
                 tar xzf project.tar.gz &&
+                cd qa-item-task-build &&
                 mvn clean package
                 '
                 """
@@ -45,7 +46,7 @@ pipeline {
             steps {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                cd ${PROJECT_DIR} &&
+                cd /qa-item-task-build &&
                 docker build -t my-java-app .
                 '
                 """
@@ -64,7 +65,7 @@ pipeline {
             steps {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                rm -rf ${PROJECT_DIR}/project.tar.gz
+                rm -rf /qa-item-task-build/project.tar.gz
                 '
                 """
             }
