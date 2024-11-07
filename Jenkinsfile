@@ -25,7 +25,7 @@ pipeline {
         stage('Copy Project to Target VM') {
             steps {
                 sh """
-                tar czf project.tar.gz -C ${env.WORKSPACE} qa-item-task-build && 
+                tar czf project.tar.gz -C ${env.WORKSPACE} . && 
                 scp project.tar.gz jenkins@${VM_HOST}:${PROJECT_DIR}
                 """
             }
