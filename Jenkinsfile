@@ -32,6 +32,7 @@ pipeline {
                 script {
                     sh """
                     scp target/${JAR_NAME} jenkins@${VM_HOST}:${TARGET_DIR}
+                    scp target/Dockerfile jenkins@${VM_HOST}:${TARGET_DIR}
                     """
                 }
             }
