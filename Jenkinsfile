@@ -24,7 +24,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    docker.image("my-java-app").run("-p 8080:8080")
+                    docker.image("my-java-app").run("-p 8081:8080")
                 }
             }
         }
