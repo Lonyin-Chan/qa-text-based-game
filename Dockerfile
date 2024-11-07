@@ -1,11 +1,6 @@
-# Stage 1: Build stage
-FROM maven:3.8.4-openjdk-17 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package
-
-# Stage 2: Run stage
 FROM openjdk:17
+
 WORKDIR /app
-COPY --from=build /app/target/text-based-game-1.0-SNAPSHOT.jar /app/myapp.jar
-ENTRYPOINT ["java", "-jar", "myapp.jar"]
+COPY text-based-game-1.0-SNAPSHOT.jar /app/
+
+CMD ["java", "-jar", "/app/text-based-game-1.0-SNAPSHOT.jar"]
