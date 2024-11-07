@@ -3,38 +3,59 @@ pipeline {
     tools {
         maven 'M3'
     }
+    environment {
+        VM_HOST = "35.210.121.134"
+    }
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        stage('Build') {
+        stage('SSH into Target VM') {
             steps {
-                sh 'mvn clean package'
+                sh """
+                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} 'echo SSH successful'
+                """
             }
         }
-        stage('Build Docker Image') {
+        stage('Build on Target VM') {
             steps {
-                script {
-                    docker.build("my-java-app")
-                }
+                sh """
+                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
+                cd /path/to/your/project &&
+                git pull &&
+                mvn clean package
+                '
+                """
             }
         }
-        stage('Run Docker Container') {
+        stage('Build Docker Image on Target VM') {
             steps {
-                script {
-                    docker.image("my-java-app").run("-p 8081:8080")
-                }
+                sh """
+                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
+                cd /path/to/your/project &&
+                docker build -t my-java-app .
+                '
+                """
+            }
+        }
+        stage('Run Docker Container on Target VM') {
+            steps {
+                sh """
+                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
+                docker run -d -p 8081:8080 my-java-app
+                '
+                """
             }
         }
     }
     post {
         success {
-            echo 'Build and run successful!'
+            echo 'Build and run successful on target VM!'
         }
         failure {
-            echo 'Build or run failed.'
+            echo 'Build or run failed on target VM.'
         }
     }
 }
