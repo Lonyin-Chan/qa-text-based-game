@@ -4,9 +4,9 @@ pipeline {
         maven 'M3'
     }
     environment {
-        VM_HOST = "35.210.121.134"
+        VM_HOST = "35.210.121.134" 
         PROJECT_DIR = "/path/to/your/project" 
-        JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar"
+        JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar" 
     }
     stages {
         stage('Checkout') {
@@ -24,7 +24,8 @@ pipeline {
         stage('Copy Project to Target VM') {
             steps {
                 sh """
-                scp -r . jenkins@${VM_HOST}:${PROJECT_DIR}
+                tar czf project.tar.gz * &&
+                scp project.tar.gz jenkins@${VM_HOST}:${PROJECT_DIR}
                 """
             }
         }
@@ -33,6 +34,7 @@ pipeline {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
                 cd ${PROJECT_DIR} &&
+                tar xzf project.tar.gz &&
                 mvn clean package
                 '
                 """
@@ -61,7 +63,7 @@ pipeline {
             steps {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                rm -rf ${PROJECT_DIR}
+                rm -rf ${PROJECT_DIR}/project.tar.gz
                 '
                 """
             }
