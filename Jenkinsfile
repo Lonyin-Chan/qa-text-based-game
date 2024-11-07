@@ -4,15 +4,15 @@ pipeline {
         maven 'M3'
     }
     environment {
-        VM_HOST = "35.210.121.134"  // Target VM IP address
-        PROJECT_DIR = "${env.WORKSPACE}/qa-item-task-build"  // Full path to your project
-        JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar"  // Your JAR file name (if applicable)
+        VM_HOST = "35.210.121.134"  
+        PROJECT_DIR = "${env.WORKSPACE}/qa-item-task-build"  
+        JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar"  
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm  // Checkout the code from the source repository
-                echo "Project directory: ${PROJECT_DIR}"  // Debug output to confirm the path
+                checkout scm 
+                echo "Project directory: ${PROJECT_DIR}"  
             }
         }
         stage('SSH into Target VM') {
