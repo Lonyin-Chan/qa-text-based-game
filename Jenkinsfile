@@ -27,7 +27,7 @@ pipeline {
             }
         }
 
-        stage('Copy JAR to Target VM') {
+        stage('Copy JAR and Dockerfile to Target VM') {
             steps {
                 script {
                     sh """
