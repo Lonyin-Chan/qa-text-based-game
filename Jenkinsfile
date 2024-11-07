@@ -42,7 +42,7 @@ pipeline {
                 script {
                     sh """
                     ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                    docker run -d -p 8081:8080 -v ${TARGET_DIR}/${JAR_NAME}:/app/${JAR_NAME} my-java-app
+                    sudo docker run -d -p 8081:8080 -v ${TARGET_DIR}/${JAR_NAME}:/app/${JAR_NAME} my-java-app
                     '
                     """
                 }
@@ -54,7 +54,7 @@ pipeline {
                 script {
                     sh """
                     ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                    rm -f ${TARGET_DIR}/${JAR_NAME}
+                    sudo rm -f ${TARGET_DIR}/${JAR_NAME}
                     '
                     """
                 }
