@@ -42,7 +42,6 @@ pipeline {
             steps {
                 sh """
                     ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                    cd ${PROJECT_DIR} && 
                     sudo docker build -t my-java-app .'
                 """
             }
