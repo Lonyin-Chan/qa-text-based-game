@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         VM_HOST = "35.210.121.134"  
-        PROJECT_DIR = "${env.WORKSPACE}/qa-item-task-build"  
+        PROJECT_DIR = "${env.WORKSPACE}"  
         JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar"  
     }
     stages {
@@ -25,7 +25,7 @@ pipeline {
         stage('Copy Project to Target VM') {
             steps {
                 sh """
-                tar czf project.tar.gz -C ${env.WORKSPACE}/qa-item-task-build && 
+                tar czf project.tar.gz -C ${env.WORKSPACE} qa-item-task-build && 
                 scp project.tar.gz jenkins@${VM_HOST}:${PROJECT_DIR}
                 """
             }
