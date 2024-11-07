@@ -5,6 +5,8 @@ pipeline {
     }
     environment {
         VM_HOST = "35.210.121.134"
+        PROJECT_DIR = "/path/to/your/project" 
+        JAR_NAME = "text-based-game-1.0-SNAPSHOT.jar"
     }
     stages {
         stage('Checkout') {
@@ -19,12 +21,18 @@ pipeline {
                 """
             }
         }
-        stage('Build on Target VM') {
+        stage('Copy Project to Target VM') {
+            steps {
+                sh """
+                scp -r . jenkins@${VM_HOST}:${PROJECT_DIR}
+                """
+            }
+        }
+        stage('Build JAR on Target VM') {
             steps {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                cd /path/to/your/project &&
-                git pull &&
+                cd ${PROJECT_DIR} &&
                 mvn clean package
                 '
                 """
@@ -34,7 +42,7 @@ pipeline {
             steps {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
-                cd /path/to/your/project &&
+                cd ${PROJECT_DIR} &&
                 docker build -t my-java-app .
                 '
                 """
@@ -45,6 +53,15 @@ pipeline {
                 sh """
                 ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
                 docker run -d -p 8081:8080 my-java-app
+                '
+                """
+            }
+        }
+        stage('Clean Up Project Files on Target VM') {
+            steps {
+                sh """
+                ssh -o StrictHostKeyChecking=no jenkins@${VM_HOST} '
+                rm -rf ${PROJECT_DIR}
                 '
                 """
             }
